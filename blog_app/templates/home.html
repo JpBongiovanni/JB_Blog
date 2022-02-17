@@ -1,31 +1,41 @@
 {% extends 'base.html' %}
-
+{% load static %}
 {% block content %}
 
-{% if user.is_authenticated %}
-    <h1>Welcome {{ user.username }}!</h1>
-{% endif %}
-<h3>Recent Posts</h3>
-<ul>
+<link rel="stylesheet" href="/static/blog_app/css/home.css" />
+<body>
+    {% if user.is_authenticated %}
+        <h1 class="rounded">Welcome {{ user.username }}!</h1>
+    {% endif %}
+    <h3 class="rounded">Recent Posts</h3>
+
 {% for post in object_list %}
-    <li><a href="{% url 'article-detail' post.pk %}"
-        >{{ post.title }}</a>
-        - <a href="{% url 'category' post.category|slugify  %}">{{ post.category }}</a> 
-        - {{ post.author.first_name }} {{ post.author.last_name }} 
-        - {{ post.post_date }} 
-        <small>
-            {% if user.is_authenticated %}
-                {% if user.id == post.author.id %}
-                    - <a href="{% url 'update_post' post.pk %}">Edit</a>
-                
-                    - <a href="{% url 'delete_post' post.pk %}">Delete</a>
+    <div class="row h-200 rounded">
+        <div class="col">
+            <h5><a href="{% url 'article-detail' post.pk %}">{{ post.title }}</a> -{{ post.title_tag }}</h5> 
+            - <a href="{% url 'category' post.category|slugify  %}">{{ post.category }}</a> 
+            - {{ post.author.first_name }} {{ post.author.last_name }} 
+            - {{ post.post_date }} 
+            <small>
+                {% if user.is_authenticated %}
+                    {% if user.id == post.author.id %}
+                        - <a href="{% url 'update_post' post.pk %}">Edit</a>
+                    
+                        - <a href="{% url 'delete_post' post.pk %}">Delete</a>
+                    {% endif %}
                 {% endif %}
-            {% endif %}
-        </small>
-            <br/>
-    {{ post.preview }}
-    </li>
+            </small>
+                <br/>
+        <p>{{ post.preview  }}</p>
+        </div>
+        {% if post.header_image %}
+        <div class="col-3 align-self-center">
+            <img src="{{ post.header_image.url }}" class="float-right mx-auto">
+        </div>
+        {% endif %}
+    </div>
+    <br/>
 {% endfor %}
-</ul>
+</body>
 
 {% endblock %}
